@@ -1,0 +1,25 @@
+{
+  "id": "neodex.football",
+  "name": "Football",
+  "version": "1.0.0",
+  "author": "NDesumeur",
+  "description": "Ton équipe de foot comme l'appli NBA : prochain match, forme, résultats et calendrier, les matchs du jour, les classements et les feuilles de match (données ESPN).",
+  "icon": "icon.png",
+  "entry": "index.js",
+  "view": "football",
+  "neobase": ">=4.0.0",
+  "type": "app",
+  "category": "Sport",
+  "mobile": true,
+  "system": false,
+  "dependencies": {},
+  "autoload": true,
+  "sdk": "2.1.0",
+  "permissions": [
+    "storage",
+    "agenda",
+    "background",
+    "network:site.api.espn.com",
+    "network:a.espncdn.com"
+  ]
+}
