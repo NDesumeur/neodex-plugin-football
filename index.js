@@ -1,29 +1,29 @@
 // Football : ton équipe (prochain match, forme, résultats, calendrier), les matchs du jour, le classement et les feuilles de match, comme l'appli NBA (données ESPN).
 // Il tourne dans le bac à sable de NeoDex, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
-const HTML = `<div class="appWrap">
+const HTML = `<div class="appWrap wide">
   <div class="agHead"><span class="label">Football</span><select id="ftLeague" class="ftSel" title="Championnat"></select>
     <div class="agNav" id="ftDayNav"><button class="btn px" id="ftPrev" title="Jour précédent">&lt;</button><button class="btn px" id="ftToday">AUJOURD'HUI</button><button class="btn px" id="ftNext" title="Jour suivant">&gt;</button></div>
-    <div class="agNav" id="ftTabs"><button class="btn px" data-v="team">MON ÉQUIPE</button><button class="btn px" data-v="games">MATCHS</button><button class="btn px" data-v="table">CLASSEMENT</button></div></div>
+    <div class="agNav" id="ftTabs"><button class="btn px" data-v="team">MES ÉQUIPES</button><button class="btn px" data-v="games">MATCHS</button><button class="btn px" data-v="table">CLASSEMENT</button></div></div>
   <div id="ftDay" class="ftDay"></div>
-  <label class="ftCal"><input type="checkbox" id="ftCal"> Ajouter les matchs de mon équipe à mon emploi du temps, mis à jour automatiquement</label>
+  <label class="ftCal"><input type="checkbox" id="ftCal"> Ajouter les matchs de mes équipes à mon emploi du temps, mis à jour automatiquement</label>
   <div id="ftMain"></div>
-  <div class="hint">Données ESPN, heures de Paris. L'étoile d'une équipe en fait ton équipe. Clique sur un match pour sa feuille de match.</div>
+  <div class="hint">Données ESPN, heures de Paris. L'étoile d'une équipe l'ajoute à tes équipes (huit au plus). Clique sur un match pour sa feuille de match.</div>
 </div>`;
-const CSS = `.ftSel{margin-left:12px;background:var(--bg2,#14102a);color:#fff;border:2px solid var(--line2,#3a2f6a);font:13px var(--body,inherit);padding:4px 6px}
+const CSS = `.ftSel{margin-left:12px;background:var(--bg2,#14102a);color:#fff;border:2px solid var(--line2,#3a2f6a);font:15px var(--body,inherit);padding:6px 8px}
 #ftDayNav{margin-left:auto}#ftTabs{margin-left:12px}#ftTabs .btn.on{--c:var(--magenta);color:#fff}
-.ftDay{font-size:17px;color:#fff;margin:4px 0}.ftCal{display:flex;gap:8px;align-items:center;margin:6px 0 10px;color:var(--shell);font-size:14px}
-.ftGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
-.ftGame{gap:8px}.ftGame.fav{--c:var(--magenta)}.ftGame.click{cursor:var(--cp,pointer)}.ftGame.click:hover{--c:var(--violet)}
-.ftTeam{display:grid;grid-template-columns:28px 1fr auto 40px;gap:10px;align-items:center}.ftTeam img{width:26px;height:26px;object-fit:contain}
-.ftTeam .tn{color:#fff;font-size:15px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.ftTeam.lost .tn,.ftTeam.lost .ftScore{color:var(--muted)}
-.ftScore{font:20px var(--title);color:#fff;text-align:right}
-.ftStatus{font:8px var(--title);letter-spacing:1px;color:var(--lilac);padding-top:6px;border-top:1px solid rgba(255,255,255,.06)}
+.ftDay{font-size:19px;color:#fff;margin:4px 0}.ftCal{display:flex;gap:8px;align-items:center;margin:6px 0 10px;color:var(--shell);font-size:15px}
+.ftGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(330px,24vw,460px),1fr));gap:clamp(14px,1.3vw,22px)}
+.ftGame{gap:12px;padding:clamp(14px,1.1vw,20px)}.ftGame.fav{--c:var(--magenta)}.ftGame.click{cursor:var(--cp,pointer)}.ftGame.click:hover{--c:var(--violet)}
+.ftTeam{display:grid;grid-template-columns:clamp(34px,2.4vw,44px) 1fr auto 48px;gap:12px;align-items:center}.ftTeam img{width:clamp(32px,2.3vw,42px);height:clamp(32px,2.3vw,42px);object-fit:contain}
+.ftTeam .tn{color:#fff;font-size:clamp(16px,1.15vw,20px);min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.ftTeam.lost .tn,.ftTeam.lost .ftScore{color:var(--muted)}
+.ftScore{font:clamp(22px,1.7vw,30px) var(--title);color:#fff;text-align:right}
+.ftStatus{font:11px var(--title);letter-spacing:1px;color:var(--lilac);padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
 .ftStatus.live{color:#fff}.ftStatus.live::before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;background:var(--red);animation:blink 1s steps(2) infinite}
-.ftStar{all:unset;cursor:var(--cp,pointer);color:var(--muted);font-size:16px;padding:0 4px}.ftStar:hover,.ftStar.on{color:#ffd07a}
-.ftRow{display:grid;grid-template-columns:26px 24px 1fr 34px 34px 34px 34px 46px 40px 70px;gap:6px;align-items:center;font-size:14px;color:var(--lilac);padding:4px 0 4px 6px;border-left:3px solid transparent}
+.ftStar{all:unset;cursor:var(--cp,pointer);color:var(--muted);font-size:19px;padding:0 4px}.ftStar:hover,.ftStar.on{color:#ffd07a}
+.ftRow{display:grid;grid-template-columns:26px 24px 1fr 34px 34px 34px 34px 46px 40px 70px;gap:6px;align-items:center;font-size:15px;color:var(--lilac);padding:5px 0 5px 6px;border-left:3px solid transparent}
 .ftRow img{width:22px;height:22px;object-fit:contain}.ftRow .tn{color:#fff;display:flex;align-items:center;gap:4px;min-width:0;white-space:nowrap;overflow:hidden}
-.ftRow.head{font:7px var(--title);letter-spacing:1px;color:var(--muted)}.ftRow.fav{background:rgba(var(--mgr),.14)}.ftRow b{color:#fff}
-.ftForm{display:flex;gap:2px}.ftForm i{width:12px;height:12px;font:7px/12px var(--title);text-align:center;color:#05010b;font-style:normal}
+.ftRow.head{font:10px var(--title);letter-spacing:1px;color:var(--muted)}.ftRow.fav{background:rgba(var(--mgr),.14)}.ftRow b{color:#fff}
+.ftForm{display:flex;gap:2px}.ftForm i{width:18px;height:18px;font:10px/18px var(--title);text-align:center;color:#05010b;font-style:normal}
 .ftForm .W{background:#5ad05a}.ftForm .D{background:#c8c0a0}.ftForm .L{background:#ff5a5a}
 .ftHero{flex-direction:row!important;align-items:center;gap:22px}.ftHero img{width:84px;height:84px;object-fit:contain}
 .ftBig{font:18px var(--title);color:#fff;margin-bottom:6px}.ftNext{font:13px var(--title);color:var(--pink);margin-top:8px}
@@ -31,17 +31,38 @@ const CSS = `.ftSel{margin-left:12px;background:var(--bg2,#14102a);color:#fff;bo
 .ftList{display:flex;flex-direction:column}.ftLine{display:grid;grid-template-columns:62px 20px 1fr 54px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid rgba(255,255,255,.06);font-size:14px;color:var(--lilac);cursor:var(--cp,pointer)}
 .ftLine:hover{color:#fff}.ftLine img{width:20px;height:20px;object-fit:contain}.ftLine b{text-align:right;color:#fff;font-weight:600}.ftLine .W{color:#5ad05a}.ftLine .L{color:#ff7a7a}
 .ftEv{display:grid;grid-template-columns:44px 22px 1fr;gap:8px;align-items:center;padding:5px 0;font-size:14px;color:var(--lilac);border-top:1px solid rgba(255,255,255,.06)}
-.ftEv.away{grid-template-columns:1fr 22px 44px;text-align:right}.ftEv b{color:#fff;font-weight:600}.ftEv .min{font:9px var(--title);color:var(--muted)}
+.ftEv.away{grid-template-columns:1fr 22px 44px;text-align:right}.ftEv b{color:#fff;font-weight:600}.ftEv .min{font:11px var(--title);color:var(--muted)}
 .ftIco{width:16px;height:16px;image-rendering:pixelated}
 .ftCmp{display:grid;grid-template-columns:70px 1fr 70px;gap:4px 10px;align-items:center;font-size:14px;color:var(--lilac)}.ftCmp b{color:#fff;font-weight:600}.ftCmp b:last-of-type{text-align:right}.ftCmp span{text-align:center}
 .ftBar{grid-column:1/-1;display:flex;gap:2px;height:6px}.ftBar i{background:var(--line2)}.ftBar i.win{background:var(--magenta)}
-#ftMain>.sysCard,#ftMain .sysCard{align-self:stretch}`;
+#ftMain>.sysCard,#ftMain .sysCard{align-self:stretch}
+.ftTeams{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.ftTeams .btn{display:flex;align-items:center;gap:8px;width:auto;margin:0;padding:6px 12px}.ftTeams .btn.on{--c:var(--magenta);color:#fff}.ftTeams img{width:24px;height:24px;object-fit:contain}
+.ftPitchW{position:relative;width:100%;max-width:min(1100px,calc((100vh - 230px) * 1.6));margin:6px auto 0;aspect-ratio:160/100}
+.ftPitch{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.ftPl{position:absolute;transform:translate(-50%,0);text-align:center;font-size:clamp(11px,.85vw,14px);line-height:1.15;color:#fff;text-shadow:1px 1px 0 #05010b,-1px 1px 0 #05010b,1px -1px 0 #05010b,-1px -1px 0 #05010b;white-space:nowrap;pointer-events:none}
+.ftPl b{font:clamp(9px,.65vw,11px) var(--title);color:#ffd07a}
+.ftLineup{display:flex;justify-content:space-between;gap:12px;font:12px var(--title);color:#fff;margin-bottom:4px}
+.ftSubs{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin-top:10px;font-size:14px;color:var(--lilac)}.ftSubs>div:nth-child(2){text-align:right}`;
 // les championnats proposés (code ESPN, nom)
 const LEAGUES = [['fra.1', 'Ligue 1'], ['eng.1', 'Premier League'], ['esp.1', 'LaLiga'], ['ita.1', 'Serie A'], ['ger.1', 'Bundesliga'], ['fra.2', 'Ligue 2'], ['por.1', 'Liga Portugal'], ['ned.1', 'Eredivisie'], ['uefa.champions', 'Ligue des champions'], ['uefa.europa', 'Ligue Europa']];
 const CUPS = ['uefa.champions', 'uefa.europa', 'uefa.europa.conf'];  // les coupes d'Europe s'ajoutent au calendrier de ton équipe
 // petites icônes pixel des événements de match : but, carton jaune, carton rouge, remplacement
 const EV_ICON = {goal: ['..kkk..', '.kwwwk.', 'kwkwkwk', 'kwwkwwk', 'kwkwkwk', '.kwwwk.', '..kkk..'], yellow: ['.kkkk..', '.kyyyk.', '.kyyyk.', '.kyyyk.', '.kyyyk.', '.kkkkk.', '.......'],
   red: ['.kkkk..', '.krrrk.', '.krrrk.', '.krrrk.', '.krrrk.', '.kkkkk.', '.......'], sub: ['..g....', '.ggg...', 'g.g....', '..g.r..', '....r.r', '...rrr.', '....r..']};
+// la place d'un joueur d'après son poste ESPN : profondeur (0 gardien … 5 attaquant) et côté (négatif à gauche, positif à droite)
+const ftDepth = a => /^(G|GK)$/.test(a) ? 0 : /WB$/.test(a) ? 1.5 : /^(CD|CB|SW|D|LB|RB)(-|$)/.test(a) ? 1 : /^DM/.test(a) ? 2 : /^AM/.test(a) ? 4 : /^(LW|RW)$/.test(a) ? 4.5 : /^(F|CF|LF|RF|ST|S)(-|$)/.test(a) ? 5 : 3;
+const ftSide = a => /-L$/.test(a) ? -1 : /^L/.test(a) ? -2 : /-R$/.test(a) ? 1 : /^R/.test(a) ? 2 : 0;  // -2 : le couloir gauche (LB, LM…), -1 : axe gauche (CD-L…)
+function ftLines(formation, starters) {  // → [[gardien], [défenseurs…], …] chaque ligne de gauche à droite
+  const gk = starters.filter(p => ftDepth(p.pos) === 0).slice(0, 1), out = starters.filter(p => !gk.includes(p)).sort((a, b) => ftDepth(a.pos) - ftDepth(b.pos) || a.place - b.place);
+  let sizes = String(formation || '').split('-').map(Number).filter(n => n > 0);
+  if (sizes.reduce((s, n) => s + n, 0) !== out.length) { sizes = []; for (const p of out) { const d = Math.round(ftDepth(p.pos)); if (!sizes.length || d !== sizes.at(-1).d) sizes.push({d, n: 0}); sizes.at(-1).n++; } sizes = sizes.map(s => s.n); }
+  const lines = []; let i = 0; for (const n of sizes) { lines.push(out.slice(i, i + n).sort((a, b) => ftSide(a.pos) - ftSide(b.pos) || a.place - b.place)); i += n; }
+  return [gk, ...lines];
+}
+{ const P = (pos, place) => ({pos, place}), L = ftLines('3-5-2', [P('G', 1), P('CD', 5), P('CD-L', 4), P('CD-R', 6), P('CM-L', 8), P('CM-R', 7), P('AM', 11), P('LM', 3), P('RM', 2), P('CF-L', 9), P('CF-R', 10)]);
+  console.assert(L.map(l => l.length).join() === '1,3,5,2' && L[1].map(p => p.pos).join() === 'CD-L,CD,CD-R' && L[2][0].pos === 'LM' && L[2].at(-1).pos === 'RM' && L[3].map(p => p.pos).join() === 'CF-L,CF-R', 'football lignes', L);
+  const M = ftLines('4-3-3', [P('G', 1), P('CD-L', 6), P('CD-R', 5), P('LB', 3), P('RB', 2), P('CM', 4), P('LM', 8), P('RM', 7), P('F', 9), P('LF', 11), P('RF', 10)]);
+  console.assert(M[1].map(p => p.pos).join() === 'LB,CD-L,CD-R,RB' && M[3].map(p => p.pos).join() === 'LF,F,RF', 'football 4-3-3', M); }
 export default async function (ctx) {
   const view = ctx.view;
   if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoDex pour s'ouvrir."; return; }
@@ -51,6 +72,7 @@ export default async function (ctx) {
   const $ = id => view.querySelector('#' + id);
   const doc = async n => { try { return await folder.read(n); } catch { return null; } };
   let prefs = (await doc('prefs')) || {league: 'fra.1'};
+  if (!prefs.teams) prefs.teams = prefs.team ? [prefs.team] : [];  // avant la 1.1 : une seule équipe
   const save = async s => { Object.assign(prefs, s); await folder.write('prefs', prefs).catch(() => {}); };
   const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
@@ -60,14 +82,18 @@ export default async function (ctx) {
   console.assert(fr('FT') === 'Terminé' && fr('HT') === 'Mi-temps' && sc({displayValue: '2'}) === '2' && sc(3) === 3, 'football fr/sc');
   const icon = k => { const c = el('canvas', 'ftIco'); c.width = c.height = 7; const g = c.getContext('2d'); EV_ICON[k].forEach((r, y) => [...r].forEach((ch, x) => { const col = {k: '#05010b', w: '#ffffff', y: '#ffd84a', r: '#ff4a5a', g: '#5ad05a'}[ch]; if (col) { g.fillStyle = col; g.fillRect(x, y, 1, 1); } })); return c; };
   const logo = (src, cls = '') => { const i = el('img', cls); i.src = src || ''; i.loading = 'lazy'; i.onerror = () => i.style.visibility = 'hidden'; return i; };
-  const isFav = id => prefs.team?.id === String(id);
-  let day = null, tab = prefs.team ? 'team' : 'games', timer = null, detailOpen = null;
+  const isFav = id => prefs.teams.some(t => t.id === String(id)), curTeam = () => prefs.teams.find(t => t.id === prefs.cur) || prefs.teams[0];
+  let day = null, tab = prefs.teams.length ? 'team' : 'games', timer = null, detailOpen = null;
   const leagueName = code => LEAGUES.find(l => l[0] === code)?.[1] || code;
   $('ftLeague').append(...LEAGUES.map(([v, n]) => { const o = el('option', '', n); o.value = v; return o; })); $('ftLeague').value = prefs.league;
   const star = (team, league) => {
     const b = el('button', 'ftStar' + (isFav(team.id) ? ' on' : ''), isFav(team.id) ? '★' : '☆');
-    b.title = isFav(team.id) ? "Ce n'est plus mon équipe" : 'Mon équipe : son onglet, ses matchs en premier et dans mon emploi du temps';
-    b.onclick = async e => { e.stopPropagation(); await save({team: isFav(team.id) ? null : {id: String(team.id), name: team.displayName, logo: team.logo || team.logos?.[0]?.href || '', league: league || prefs.league}}); render(); syncCalendar(); };
+    b.title = isFav(team.id) ? 'Retirer de mes équipes' : 'Ajouter à mes équipes : son onglet, ses matchs en premier et dans mon emploi du temps';
+    b.onclick = async e => { e.stopPropagation(); const id = String(team.id);
+      if (isFav(id)) await save({teams: prefs.teams.filter(t => t.id !== id), team: null});
+      else { if (prefs.teams.length >= 8) return toast('Huit équipes au plus : retire d’abord une étoile', true);
+        await save({teams: [...prefs.teams, {id, name: team.displayName, logo: team.logo || team.logos?.[0]?.href || '', league: league || prefs.league}], cur: id, team: null}); }
+      render(); syncCalendar(); };
     return b;
   };
   function card(e, league) {  // un match : les deux équipes, le score, l'état
@@ -129,10 +155,13 @@ export default async function (ctx) {
   const res = (e, id) => { const c = e.competitions[0], me = c.competitors.find(t => String(t.team.id) === String(id)), op = c.competitors.find(t => t !== me); if (!me || !op) return null;
     const a = +sc(me.score), b = +sc(op.score); return {me, op, txt: sc(me.score) + ' - ' + sc(op.score), r: a > b ? 'W' : a < b ? 'L' : 'D', home: me.homeAway === 'home'}; };
   async function teamPage(main) {
-    const team = prefs.team;
-    if (!team) { main.replaceChildren(el('div', 'sysCard px', 'Choisis ton équipe : ouvre MATCHS ou CLASSEMENT et clique sur l\'étoile ☆ à côté de son nom.')); return; }
+    const team = curTeam();
+    if (!team) { main.replaceChildren(el('div', 'sysCard px', 'Choisis tes équipes : ouvre MATCHS ou CLASSEMENT et clique sur l\'étoile ☆ à côté de leur nom (huit au plus).')); return; }
+    const pick = el('div', 'ftTeams');  // le choix de l'équipe montrée, quand tu en suis plusieurs
+    if (prefs.teams.length > 1) pick.append(...prefs.teams.map(t => { const b = el('button', 'btn px' + (t === team ? ' on' : '')); b.append(logo(t.logo), el('span', '', t.name)); b.onclick = async () => { await save({cur: t.id}); render(); }; return b; }));
     main.replaceChildren(el('div', 'hint', 'Chargement des matchs de ' + team.name + '…'));
-    const all = await teamSchedule(team), done = all.filter(x => x.e.competitions[0].status.type.state === 'post'), next = all.filter(x => x.e.competitions[0].status.type.state !== 'post');
+    const all = await teamSchedule(team); if (detailOpen || tab !== 'team') return;  // une feuille de match ouverte pendant le chargement reste affichée
+    const done = all.filter(x => x.e.competitions[0].status.type.state === 'post'), next = all.filter(x => x.e.competitions[0].status.type.state !== 'post');
     const hero = el('div', 'sysCard px ftHero'), info = el('div'); info.append(el('div', 'ftBig', team.name), el('div', 'hint', leagueName(team.league)));
     const form = el('div', 'ftForm'); for (const x of done.slice(-5)) { const r = res(x.e, team.id); if (r) { const i = el('i', r.r, {W: 'V', D: 'N', L: 'D'}[r.r]); i.title = (r.home ? 'contre ' : 'à ') + r.op.team.displayName + ' : ' + r.txt; form.append(i); } }
     if (form.childNodes.length) info.append(el('div', 'hint', 'Forme (5 derniers) :'), form);
@@ -148,7 +177,7 @@ export default async function (ctx) {
     const cols = el('div', 'ftCols'), a = el('div', 'sysCard px ftList'), b = el('div', 'sysCard px ftList');
     a.append(el('span', 'label', 'Derniers résultats'), ...(done.length ? done.slice(-10).reverse().map(x => line(x, true)) : [el('div', 'hint', 'Pas encore de résultat cette saison.')]));
     b.append(el('span', 'label', 'Calendrier'), ...(next.length ? next.slice(0, 12).map(x => line(x, false)) : [el('div', 'hint', 'Aucun match annoncé pour le moment.')]));
-    cols.append(a, b); main.replaceChildren(hero, cols);
+    cols.append(a, b); main.replaceChildren(...(pick.childNodes.length ? [pick] : []), hero, cols);
     if (next[0]?.e.competitions[0].status.type.state === 'in') timer = setTimeout(render, 30000);
   }
   async function match(id, league) {
@@ -163,6 +192,7 @@ export default async function (ctx) {
     top.append(el('div', 'ftStatus' + (st.state === 'in' ? ' live' : ''), st.state === 'pre' ? new Date(comp.date).toLocaleString('fr-FR', {weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'}) : (st.state === 'in' ? 'EN DIRECT · ' : '') + fr(st.detail || st.shortDetail)));
     const v = s.gameInfo?.venue; if (v) top.append(el('div', 'hint', v.fullName + (v.address?.city ? ', ' + v.address.city : '') + (s.gameInfo.attendance ? ' · ' + s.gameInfo.attendance.toLocaleString('fr-FR') + ' spectateurs' : '')));
     nodes.push(top);
+    const lu = lineup(s, teams); if (lu) nodes.push(lu);
     // le fil du match : buts, cartons, remplacements
     const KIND = t => /own goal/i.test(t) ? ['goal', 'But contre son camp'] : /penalty - scored|goal/i.test(t) ? ['goal', /penalty/i.test(t) ? 'But sur penalty' : 'But'] : /yellow/i.test(t) ? ['yellow', 'Carton jaune'] : /red/i.test(t) ? ['red', 'Carton rouge'] : /substitution/i.test(t) ? ['sub', 'Remplacement'] : null;
     const evs = (s.keyEvents || []).map(k => ({k, kind: KIND(k.type?.text || '')})).filter(x => x.kind && x.k.team);
@@ -192,12 +222,46 @@ export default async function (ctx) {
     const wrap = el('div'); wrap.style.cssText = 'display:flex;flex-direction:column;gap:18px;align-items:flex-start'; wrap.append(...nodes); main.replaceChildren(wrap);
     if (st.state === 'in') setTimeout(() => detailOpen === id && match(id, league), 30000);
   }
+  // ---- la composition des deux équipes, en pixel art sur un terrain : à domicile à gauche, à l'extérieur à droite ----
+  const SHIRT = ['kkk..kkk', 'kcckkcck', 'kcccccck', 'kkcccckk', '.kcccck.', '.kcccck.', '.kkkkkk.'];
+  const hex = c => [1, 3, 5].map(i => parseInt(c.substr(i, 2), 16)), near = (a, b) => hex(a).reduce((s, v, i) => s + Math.abs(v - hex(b)[i]), 0) < 150;
+  function lineup(s, teams) {
+    const R = teams.map(t => (s.rosters || []).find(r => String(r.team?.id) === String(t.team.id)));
+    const st = R.map(r => (r?.roster || []).filter(p => p.starter).map(p => ({name: p.athlete?.lastName || p.athlete?.shortName || p.athlete?.displayName || '?', n: p.jersey || '', pos: p.position?.abbreviation || '', place: +p.formationPlace || 0, out: p.subbedOut})));
+    if (st.some(x => x.length < 11)) return null;
+    const col = teams.map(t => '#' + (t.team.color || 'ffffff')); if (near(col[0], col[1])) col[1] = '#' + (teams[1].team.alternateColor || 'ffffff');
+    if (near(col[1], '#3f8a3a')) col[1] = '#ffffff'; if (near(col[0], '#3f8a3a')) col[0] = '#ffffff';
+    const box = el('div', 'sysCard px'), head = el('div', 'ftLineup'), wrap = el('div', 'ftPitchW'), cv = el('canvas', 'ftPitch'); cv.width = 160; cv.height = 100;
+    head.append(el('span', '', teams[0].team.shortDisplayName || teams[0].team.displayName + ' · ' + (R[0].formation || '')), el('span', '', (R[1].formation || '') + ' · ' + (teams[1].team.shortDisplayName || teams[1].team.displayName)));
+    head.firstChild.textContent = (teams[0].team.shortDisplayName || teams[0].team.displayName) + (R[0].formation ? ' · ' + R[0].formation : '');
+    const g = cv.getContext('2d'), P = (c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
+    for (let x = 0; x < 160; x += 10) P((x / 10) % 2 ? '#3f8a3a' : '#468f40', x, 0, 10, 100);  // l'herbe en bandes
+    const W = '#e8f4e0'; P(W, 4, 4, 152, 1); P(W, 4, 95, 152, 1); P(W, 4, 4, 1, 92); P(W, 155, 4, 1, 92); P(W, 80, 4, 1, 92);  // les lignes
+    for (let a = 0; a < 64; a++) P(W, Math.round(80 + 12 * Math.cos(a / 64 * 2 * Math.PI)), Math.round(50 + 12 * Math.sin(a / 64 * 2 * Math.PI)));
+    for (const [x, d] of [[4, 1], [155, -1]]) { P(W, x + d * 24, 26, 1, 48); P(W, Math.min(x, x + d * 24), 26, 25, 1); P(W, Math.min(x, x + d * 24), 73, 25, 1); P(W, x + d * 8, 40, 1, 20); P(W, Math.min(x, x + d * 8), 40, 9, 1); P(W, Math.min(x, x + d * 8), 59, 9, 1); P('#ffffff', x - (d > 0 ? 3 : -1), 45, 3, 10); }
+    wrap.append(cv);
+    st.forEach((players, ti) => {
+      const lines = ftLines(R[ti].formation, players), n = lines.length;
+      lines.forEach((line, li) => line.forEach((p, k) => {
+        const fx = li === 0 ? 8 : 25 + (li - 1) * (46 / Math.max(1, n - 2)), y = (k + 1) / (line.length + 1) * 84 + 8;  // x : la profondeur ; y : le côté (gauche en haut pour qui attaque vers la droite)
+        const x = ti ? 160 - fx : fx, yy = ti ? 100 - y : y, c = li === 0 ? '#ffd84a' : col[ti];
+        SHIRT.forEach((r, sy) => [...r].forEach((ch, sx) => { if (ch !== '.') P(ch === 'k' ? '#05010b' : c, Math.round(x - 4 + sx), Math.round(yy - 6 + sy)); }));
+        const lab = el('div', 'ftPl'); lab.style.left = x / 1.6 + '%'; lab.style.top = (yy + 1.5) + '%'; lab.append(el('b', '', p.n), document.createElement('br'), p.name + (p.out ? ' ↓' : '')); lab.title = p.pos; wrap.append(lab);
+      }));
+    });
+    const subs = el('div', 'ftSubs');
+    R.forEach(r => { const d = el('div'); const ins = (r.roster || []).filter(p => p.subbedIn).map(p => (p.jersey ? p.jersey + ' ' : '') + (p.athlete?.lastName || p.athlete?.displayName || '')); d.textContent = ins.length ? '↑ ' + ins.join(' · ') : ''; subs.append(d); });
+    box.append(el('span', 'label', 'Compositions'), head, wrap); if (subs.textContent.trim()) box.append(subs);
+    return box;
+  }
+  view.__ft = {match, lineup, prefs: () => prefs, save, render, setTab: t => { tab = t; detailOpen = null; }, show: n => { detailOpen = 'test'; clearTimeout(timer); $('ftMain').replaceChildren(n); }};
   // ---- les matchs de ton équipe dans ton emploi du temps ----
   const hm = mn => String(Math.floor(mn / 60)).padStart(2, '0') + ':' + String(mn % 60).padStart(2, '0');
   async function syncCalendar() {
     const evs = [];
-    if (prefs.calendar !== false && prefs.team) try {
-      for (const {e} of await teamSchedule(prefs.team)) {
+    if (prefs.calendar !== false && prefs.teams.length) try {
+      const seen = new Set(), all = (await Promise.all(prefs.teams.map(t => teamSchedule(t).catch(() => [])))).flat().filter(({e}) => !seen.has(e.id) && seen.add(e.id));
+      for (const {e} of all) {
         const d = new Date(e.date); if (d < new Date(Date.now() - 36e5) || d > new Date(Date.now() + 90 * 864e5)) continue;
         const cs = e.competitions?.[0]?.competitors || [], home = cs.find(c => c.homeAway === 'home')?.team, away = cs.find(c => c.homeAway === 'away')?.team, s = d.getHours() * 60 + d.getMinutes();
         evs.push({id: 'foot:' + e.id, kind: 'event', title: '⚽ ' + (home?.displayName || '?') + ' - ' + (away?.displayName || '?'), date: ymd(d), start: hm(s), end: hm(Math.min(1439, s + 115)), allDay: false, color: '#3aa84a', place: 'Match de foot'});
@@ -206,7 +270,7 @@ export default async function (ctx) {
     ctx.host.agenda?.sync('football', evs);
   }
   $('ftCal').checked = prefs.calendar !== false;
-  $('ftCal').onchange = async () => { await save({calendar: $('ftCal').checked}); syncCalendar(); toast(prefs.calendar ? 'Les matchs de ton équipe sont dans ton emploi du temps' : 'Les matchs ne sont plus dans ton emploi du temps'); };
+  $('ftCal').onchange = async () => { await save({calendar: $('ftCal').checked}); syncCalendar(); toast(prefs.calendar ? 'Les matchs de tes équipes sont dans ton emploi du temps' : 'Les matchs ne sont plus dans ton emploi du temps'); };
   $('ftLeague').onchange = async () => { await save({league: $('ftLeague').value}); if (tab === 'team') tab = 'games'; detailOpen = null; day = null; render(); };
   $('ftPrev').onclick = () => { day = ymd(addDays(new Date(day + 'T12:00'), -1)); render(); };
   $('ftNext').onclick = () => { day = ymd(addDays(new Date(day + 'T12:00'), 1)); render(); };

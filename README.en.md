@@ -41,3 +41,11 @@ Your team, the chosen league and the schedule choice are stored by NeoDex, backe
 In NeoDex: **NeoStore → Discover → Football → Install**.
 
 Building a plugin: see the [NeoDex SDK](https://github.com/NDesumeur/neodex-sdk).
+
+## Several teams
+
+A team's ☆ star adds it to **My teams** (up to eight). Their games come first, all go into your schedule if you ticked it, and buttons at the top of the tab switch between them.
+
+## Line-ups
+
+In the match sheet, both starting elevens are drawn in pixel art on a pitch, in their positions and formation (4-3-3, 3-5-2…): club-coloured shirts, goalkeeper in yellow, number and name; ↓ marks a substituted player, and the players who came on are listed below.

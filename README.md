@@ -41,3 +41,11 @@ Ton équipe, le championnat choisi et le choix de l'emploi du temps sont enregis
 Dans NeoDex : **NeoStore → À découvrir → Football → Installer**.
 
 Développer un plugin : voir le [SDK NeoDex](https://github.com/NDesumeur/neodex-sdk).
+
+## Plusieurs équipes
+
+L'étoile ☆ d'une équipe l'ajoute à **Mes équipes** (huit au plus). Leurs matchs passent en premier, vont tous dans ton emploi du temps si tu l'as coché, et des boutons en haut de l'onglet passent de l'une à l'autre.
+
+## Compositions
+
+Dans la feuille de match, les onze de départ des deux équipes sont dessinés en pixel art sur un terrain, à leur poste et selon leur système (4-3-3, 3-5-2…) : maillot aux couleurs du club, gardien en jaune, numéro et nom ; ↓ marque un joueur remplacé, et les entrants sont listés dessous.
