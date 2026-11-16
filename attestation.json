@@ -1,9 +1,9 @@
 {
   "pluginId": "neodex.football",
   "repo": "NDesumeur/neodex-plugin-football",
-  "version": "1.1.0",
-  "sha256": "ce702667c2a93be08120b04ad57c2ce3f9b09b1bb0808f47b6a5a1a661a637e1",
-  "approvedAt": "2026-11-16T04:14:35.989Z",
+  "version": "1.1.1",
+  "sha256": "c7ba9e434be19b0ab6841b7252b9cf8411bc7bb24aaa15b6e4e02727c0a0a50f",
+  "approvedAt": "2026-11-16T16:38:48.762Z",
   "neobase": ">=4.0.0",
-  "signature": "R9YRG79mqIHFsmBuroWqWmwG+NAVHhH0gZV1iYaBSPnV0MoOUgiEeEKKKAFSothCUDH8aLClEy27kKJuxbvoCg=="
+  "signature": "Mp+8hZkCt+4Vy6TU4l95FGCXqWOIQycTZNs6YBi3WKZzY8IDkdPu99tpRCbxjpH+br9EEaRkmb9FTybTMeGcDg=="
 }
