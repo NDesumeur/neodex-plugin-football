@@ -91,5 +91,7 @@
  "Tirs cadrés": "Shots on target",
  "Voir la feuille de match": "See the match sheet",
  "Équipe": "Team",
- "Équipes et compétitions suivies.": "Teams and competitions followed."
+ "Équipes et compétitions suivies.": "Teams and competitions followed.",
+ "Données ESPN, heures de Paris. L'étoile d'une équipe l'ajoute à tes équipes (huit au plus). Clique sur un match pour sa feuille de match.": "ESPN data, Paris times. The star of a team adds it to your teams (eight at most). Click a match for its match sheet.",
+ "Choisis tes équipes : ouvre MATCHS ou CLASSEMENT et clique sur l'étoile ☆ à côté de leur nom (huit au plus).": "Pick your teams: open MATCHES or STANDINGS and click the star ☆ next to their name (eight at most)."
 }
