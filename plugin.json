@@ -1,7 +1,7 @@
 {
   "id": "neodex.football",
   "name": "Football",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": "NDesumeur",
   "description": "Suis ton équipe de foot : prochain match, forme, derniers résultats et calendrier, coupes d'Europe comprises. Les matchs du jour en direct avec mise à jour automatique, les classements avec leurs zones, et des feuilles de match avec buts, cartons, remplacements et statistiques. Dix championnats dont la Ligue 1 et la Ligue des champions ; les matchs de ton équipe peuvent aller dans ton emploi du temps. Données ESPN. Suis plusieurs équipes à la fois (huit au plus, avec un bouton pour passer de l'une à l'autre), compositions des deux équipes en pixel art sur un terrain dans la feuille de match, cartes de match et textes plus grands selon la taille de l'écran.",
   "icon": "icon.png",
@@ -12,7 +12,7 @@
   "category": "Sport",
   "compatibility": ["windows", "android", "linux"],
   "syncMode": "fusion",
-  "syncInfo": "Équipes et compétitions suivies.",
+  "syncInfo": "Tes équipes favorites.",
   "mobile": true,
   "system": false,
   "dependencies": {},
@@ -24,5 +24,13 @@
     "background",
     "network:site.api.espn.com",
     "network:a.espncdn.com"
-  ]
+  ],
+  "sync": {
+    "prefs": {
+      "share": [
+        "teams",
+        "cur"
+      ]
+    }
+  }
 }
