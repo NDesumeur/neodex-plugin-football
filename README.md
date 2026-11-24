@@ -4,6 +4,10 @@ Suis ton équipe et les grands championnats : prochain match, forme du moment, r
 
 *English version: [README.en.md](README.en.md)*
 
+## Les buts en direct (nouveau en 1.2.0)
+
+Une notification à chaque but des matchs de tes équipes, même Football fermé (buteur, minute, buts adverses et buts annulés compris) ; au choix, le coup d'envoi et le résultat. Aucune requête en dehors de leurs matchs.
+
 ## Les onglets
 
 - **Mon équipe** : le prochain match de ton équipe (en direct s'il est en cours), sa forme sur les derniers matchs, ses **derniers résultats** et son **calendrier**, coupes d'Europe comprises.
@@ -49,3 +53,12 @@ L'étoile ☆ d'une équipe l'ajoute à **Mes équipes** (huit au plus). Leurs m
 ## Compositions
 
 Dans la feuille de match, les onze de départ des deux équipes sont dessinés en pixel art sur un terrain, à leur poste et selon leur système (4-3-3, 3-5-2…) : maillot aux couleurs du club, gardien en jaune, numéro et nom ; ↓ marque un joueur remplacé, et les entrants sont listés dessous.
+
+## Les buts en direct (1.2.0)
+
+Coche **Me prévenir de chaque but des matchs de mes équipes** (coché d’office) : pendant un match d’une de tes équipes, Football regarde le score chaque minute, même fermé, et envoie une notification à chaque but (« ⚽ BUT ! Rennes · Rennes 1 - 0 Lille · 23' · le buteur »), y compris les buts adverses et les buts annulés.
+
+- **et du coup d’envoi et du résultat** ajoute une notification au début et à la fin du match (victoire, défaite ou match nul).
+- **ESSAYER** envoie une notification d’exemple.
+- Aucune requête en dehors des matchs de tes équipes : Football sait quand ils se jouent grâce à leur calendrier (relu toutes les 3 h).
+- Les matchs de tes équipes vont toujours dans ton emploi du temps si la première case est cochée.

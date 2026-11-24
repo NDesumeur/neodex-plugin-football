@@ -19,5 +19,13 @@ module.exports = async ({ pj, sleep }) => {
     return { w: Math.round(w.width), out, over: [...document.querySelectorAll('.appWrap *')].filter(e => e.getBoundingClientRect().right > innerWidth + 1).length }; })()`);
   if (r.out.length) throw new Error('noms hors du terrain : ' + r.out.join(', '));
   if (r.over) throw new Error(r.over + ' élément(s) débordent à droite');
-  return '2 équipes suivies, compositions de 22 joueurs sur un terrain de ' + r.w + ' px';
+  // les buts en direct : la vérification interne a rejoué un match (coup d'envoi, but avec buteur, but adverse, fin) ; ici les réglages et la tâche de fond
+  if (await pj(`document.getElementById('ftGoals').checked`) !== true) throw new Error('les buts ne sont pas cochés d’office');
+  await pj(`(() => { const c = document.getElementById('ftEnds'); c.checked = true; c.dispatchEvent(new Event('change')); })(), 0`); await sleep(300);
+  if (await pj(`${H}.prefs().ends`) !== true) throw new Error('coup d’envoi et résultat pas gardés');
+  await pj(`(() => { const c = document.getElementById('ftEnds'); c.checked = false; c.dispatchEvent(new Event('change')); })(), 0`);
+  const quiet = await pj(`${H}.goals.sched([]), ${H}.goals.tick()`);
+  if (quiet !== 0) throw new Error('sans match en cours, la tâche de fond travaille quand même');
+  await pj(`document.getElementById('ftTry').click(), 0`); await sleep(800);
+  return '2 équipes suivies, compositions de 22 joueurs sur un terrain de ' + r.w + ' px · buts : cochés d’office, réglage gardé, aucune requête sans match, notification d’essai';
 };

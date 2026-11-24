@@ -4,6 +4,10 @@ Follow your team and the major leagues: next match, current form, results, fixtu
 
 *Version française : [README.md](README.md)*
 
+## Live goals (new in 1.2.0)
+
+A notification for every goal in your teams' matches, even with Football closed (scorer, minute, opponent and disallowed goals included); if you want, kick-off and the result. No request outside their matches.
+
 ## The tabs
 
 - **My team**: your team's next match (live if it is being played), its form over recent matches, its **latest results** and its **fixtures**, European cups included.
@@ -49,3 +53,12 @@ A team's ☆ star adds it to **My teams** (up to eight). Their games come first,
 ## Line-ups
 
 In the match sheet, both starting elevens are drawn in pixel art on a pitch, in their positions and formation (4-3-3, 3-5-2…): club-coloured shirts, goalkeeper in yellow, number and name; ↓ marks a substituted player, and the players who came on are listed below.
+
+## Live goals (1.2.0)
+
+Tick **Tell me about every goal in my teams’ matches** (ticked by default): during a match of one of your teams, Football checks the score every minute, even closed, and sends a notification for every goal (“⚽ GOAL! Rennes · Rennes 1 - 0 Lille · 23' · the scorer”), including opponent goals and disallowed goals.
+
+- **and about kick-off and the result** adds a notification at the start and at the end of the match (win, defeat or draw).
+- **TRY** sends a sample notification.
+- No request outside your teams’ matches: Football knows when they are played from their schedule (read again every 3 h).
+- Your teams’ matches still go into your timetable if the first box is ticked.

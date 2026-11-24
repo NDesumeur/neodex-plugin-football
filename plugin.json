@@ -1,16 +1,20 @@
 {
   "id": "neodex.football",
   "name": "Football",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "author": "NDesumeur",
-  "description": "Suis ton équipe de foot : prochain match, forme, derniers résultats et calendrier, coupes d'Europe comprises. Les matchs du jour en direct avec mise à jour automatique, les classements avec leurs zones, et des feuilles de match avec buts, cartons, remplacements et statistiques. Dix championnats dont la Ligue 1 et la Ligue des champions ; les matchs de ton équipe peuvent aller dans ton emploi du temps. Données ESPN. Suis plusieurs équipes à la fois (huit au plus, avec un bouton pour passer de l'une à l'autre), compositions des deux équipes en pixel art sur un terrain dans la feuille de match, cartes de match et textes plus grands selon la taille de l'écran.",
+  "description": "Suis ton équipe de foot : prochain match, forme, derniers résultats et calendrier, coupes d'Europe comprises. Les matchs du jour en direct avec mise à jour automatique, les classements avec leurs zones, et des feuilles de match avec buts, cartons, remplacements et statistiques. Dix championnats dont la Ligue 1 et la Ligue des champions ; les matchs de ton équipe peuvent aller dans ton emploi du temps. Données ESPN. Suis plusieurs équipes à la fois (huit au plus, avec un bouton pour passer de l'une à l'autre), compositions des deux équipes en pixel art sur un terrain dans la feuille de match, cartes de match et textes plus grands selon la taille de l'écran. Une notification à chaque but des matchs de tes équipes, même Football fermé (et, au choix, au coup d’envoi et au résultat).",
   "icon": "icon.png",
   "entry": "index.js",
   "view": "football",
   "neobase": ">=4.0.0",
   "type": "app",
   "category": "Sport",
-  "compatibility": ["windows", "android", "linux"],
+  "compatibility": [
+    "windows",
+    "android",
+    "linux"
+  ],
   "syncMode": "fusion",
   "syncInfo": "Tes équipes favorites.",
   "mobile": true,
@@ -22,6 +26,7 @@
     "storage",
     "agenda",
     "background",
+    "notifications",
     "network:site.api.espn.com",
     "network:a.espncdn.com"
   ],
@@ -32,5 +37,12 @@
         "cur"
       ]
     }
-  }
+  },
+  "notifications": [
+    {
+      "type": "goal",
+      "name": "Buts en direct",
+      "description": "Une notification à chaque but des matchs de tes équipes (et, au choix, au coup d’envoi et à la fin)."
+    }
+  ]
 }

@@ -6,6 +6,7 @@ const HTML = `<div class="appWrap wide">
     <div class="agNav" id="ftTabs"><button class="btn px" data-v="team">MES ÉQUIPES</button><button class="btn px" data-v="games">MATCHS</button><button class="btn px" data-v="table">CLASSEMENT</button></div></div>
   <div id="ftDay" class="ftDay"></div>
   <label class="ftCal"><input type="checkbox" id="ftCal"> Ajouter les matchs de mes équipes à mon emploi du temps, mis à jour automatiquement</label>
+  <div class="ftCal"><label class="ftCal"><input type="checkbox" id="ftGoals"> Me prévenir de chaque but des matchs de mes équipes</label><label class="ftCal"><input type="checkbox" id="ftEnds"> et du coup d'envoi et du résultat</label><button class="btn px" id="ftTry" title="envoyer une notification d'exemple">ESSAYER</button></div>
   <div id="ftMain"></div>
   <div class="hint">Données ESPN, heures de Paris. L'étoile d'une équipe l'ajoute à tes équipes (huit au plus). Clique sur un match pour sa feuille de match.</div>
 </div>`;
@@ -63,6 +64,39 @@ function ftLines(formation, starters) {  // → [[gardien], [défenseurs…], �
   console.assert(L.map(l => l.length).join() === '1,3,5,2' && L[1].map(p => p.pos).join() === 'CD-L,CD,CD-R' && L[2][0].pos === 'LM' && L[2].at(-1).pos === 'RM' && L[3].map(p => p.pos).join() === 'CF-L,CF-R', 'football lignes', L);
   const M = ftLines('4-3-3', [P('G', 1), P('CD-L', 6), P('CD-R', 5), P('LB', 3), P('RB', 2), P('CM', 4), P('LM', 8), P('RM', 7), P('F', 9), P('LF', 11), P('RF', 10)]);
   console.assert(M[1].map(p => p.pos).join() === 'LB,CD-L,CD-R,RB' && M[3].map(p => p.pos).join() === 'LF,F,RF', 'football 4-3-3', M); }
+// les notifications d'un match : on compare l'état d'avant (prev : {h, a, st}) au match ESPN d'aujourd'hui ; fav : les identifiants de tes équipes.
+// Rend [nouvel état, messages]. Le premier regard sur un match ne prévient de rien (NeoDex qui démarre en plein match ne rattrape pas les buts déjà marqués).
+function ftNews(prev, e, fav, o = { goals: true, ends: false }) {
+  const c = e.competitions?.[0]; if (!c) return [prev, []];
+  const home = c.competitors.find(t => t.homeAway === 'home'), away = c.competitors.find(t => t.homeAway === 'away'); if (!home || !away) return [prev, []];
+  const num = t => +(typeof t.score === 'object' ? t.score?.value ?? t.score?.displayValue : t.score) || 0;
+  const now = { h: num(home), a: num(away), st: c.status?.type?.state || 'pre' }, out = [];
+  if (!prev) return [now, out];
+  const score = home.team.displayName + ' ' + now.h + ' - ' + now.a + ' ' + away.team.displayName, clock = c.status?.displayClock && now.st === 'in' ? ' · ' + c.status.displayClock : '';
+  const mine = fav.includes(String(home.team.id)) ? home : away, other = mine === home ? away : home;
+  if (o.ends && prev.st === 'pre' && now.st === 'in') out.push({ title: 'Coup d’envoi : ' + home.team.displayName + ' - ' + away.team.displayName, body: 'Le match de ' + mine.team.displayName + ' commence.' });
+  if (o.goals) for (const [k, t] of [['h', home], ['a', away]]) {
+    if (now[k] > prev[k]) {
+      const goals = (c.details || []).filter(d => d.scoringPlay && String(d.team?.id) === String(t.team.id)), last = goals[goals.length - 1];
+      const who = last?.athletesInvolved?.[0]?.displayName, how = last?.ownGoal ? ' (contre son camp)' : last?.penaltyKick ? ' (penalty)' : '';
+      out.push({ title: (t === mine ? '⚽ BUT ! ' : 'But de ') + t.team.displayName, body: score + (last?.clock?.displayValue ? ' · ' + last.clock.displayValue : clock) + (who ? ' · ' + who + how : '') });
+    } else if (now[k] < prev[k] && now.st === 'in') out.push({ title: 'But annulé pour ' + t.team.displayName, body: score + clock });
+  }
+  if (o.ends && prev.st === 'in' && now.st === 'post') {
+    const m = mine === home ? now.h : now.a, x = mine === home ? now.a : now.h;
+    out.push({ title: (m > x ? 'Victoire de ' : m < x ? 'Défaite de ' : 'Match nul pour ') + mine.team.displayName, body: 'Fin du match : ' + score });
+  }
+  return [now, out];
+}
+{ const T = (h, a, st, details) => ({ competitions: [{ status: { type: { state: st }, displayClock: "67'" }, details, competitors: [{ homeAway: 'home', score: String(h), team: { id: '169', displayName: 'Rennes' } }, { homeAway: 'away', score: { value: a }, team: { id: '166', displayName: 'Lille' } }] }] });
+  let [p, m] = ftNews(null, T(0, 0, 'pre'), ['169'], { goals: true, ends: true }); const ok1 = !m.length;
+  [p, m] = ftNews(p, T(0, 0, 'in'), ['169'], { goals: true, ends: true }); const ok2 = m.length === 1 && /Coup d’envoi/.test(m[0].title);
+  [p, m] = ftNews(p, T(1, 0, 'in', [{ scoringPlay: true, team: { id: '169' }, clock: { displayValue: "23'" }, athletesInvolved: [{ displayName: 'Jean Martin' }] }]), ['169']);
+  const ok3 = m.length === 1 && m[0].title === '⚽ BUT ! Rennes' && m[0].body === "Rennes 1 - 0 Lille · 23' · Jean Martin";
+  [p, m] = ftNews(p, T(1, 1, 'in'), ['169']); const ok4 = m.length === 1 && m[0].title === 'But de Lille';
+  [p, m] = ftNews(p, T(1, 1, 'post'), ['169'], { goals: true, ends: true }); const ok5 = m.length === 1 && m[0].title === 'Match nul pour Rennes';
+  console.assert(ok1 && ok2 && ok3 && ok4 && ok5, 'football : notifications', ok1, ok2, ok3, ok4, ok5); }
+
 export default async function (ctx) {
   const view = ctx.view;
   if (!ctx.host) { view.textContent = "Ce plugin doit être approuvé par NeoDex pour s'ouvrir."; return; }
@@ -257,10 +291,18 @@ export default async function (ctx) {
   view.__ft = {match, lineup, prefs: () => prefs, save, render, setTab: t => { tab = t; detailOpen = null; }, show: n => { detailOpen = 'test'; clearTimeout(timer); $('ftMain').replaceChildren(n); }};
   // ---- les matchs de ton équipe dans ton emploi du temps ----
   const hm = mn => String(Math.floor(mn / 60)).padStart(2, '0') + ':' + String(mn % 60).padStart(2, '0');
+  // les matchs de tes équipes (championnat et coupes), relus toutes les 3 h : la tâche de fond en déduit quand regarder les scores
+  let sched = [];
+  async function schedule() {
+    if (!prefs.teams.length) return (sched = []);
+    const seen = new Set(); sched = (await Promise.all(prefs.teams.map(t => teamSchedule(t).catch(() => [])))).flat().filter(({e}) => !seen.has(e.id) && seen.add(e.id));
+    return sched;
+  }
   async function syncCalendar() {
     const evs = [];
+    if (prefs.calendar === false || !prefs.teams.length) await schedule().catch(() => {});
     if (prefs.calendar !== false && prefs.teams.length) try {
-      const seen = new Set(), all = (await Promise.all(prefs.teams.map(t => teamSchedule(t).catch(() => [])))).flat().filter(({e}) => !seen.has(e.id) && seen.add(e.id));
+      const all = await schedule();
       for (const {e} of all) {
         const d = new Date(e.date); if (d < new Date(Date.now() - 36e5) || d > new Date(Date.now() + 90 * 864e5)) continue;
         const cs = e.competitions?.[0]?.competitors || [], home = cs.find(c => c.homeAway === 'home')?.team, away = cs.find(c => c.homeAway === 'away')?.team, s = d.getHours() * 60 + d.getMinutes();
@@ -277,6 +319,33 @@ export default async function (ctx) {
   $('ftToday').onclick = () => { day = ymd(new Date()); render(); };
   $('ftTabs').onclick = e => { const v = e.target.dataset.v; if (v) { tab = v; detailOpen = null; render(); } };
   syncCalendar(); const calTimer = setInterval(syncCalendar, 3 * 3600e3);
+  // ---- les buts en direct : chaque minute, seulement quand un match d'une de tes équipes se joue (de 5 min avant à 3 h après le coup d'envoi) ----
+  const goalsOn = () => prefs.goals !== false, endsOn = () => prefs.ends === true;
+  const live = new Map();  // id du match -> état vu la dernière fois
+  async function goalTick(now = Date.now()) {
+    if (!goalsOn() && !endsOn() || !prefs.teams.length) return 0;
+    const playing = sched.filter(({e}) => { const t = Date.parse(e.date); return now > t - 5 * 60000 && now < t + 3 * 3600e3 && e.competitions?.[0]?.status?.type?.state !== 'post'; });
+    for (const id of live.keys()) if (!playing.some(({e}) => e.id === id) && !live.get(id).keep) live.delete(id);
+    if (!playing.length) return 0;
+    const fav = prefs.teams.map(t => t.id); let n = 0;
+    for (const lg of new Set(playing.map(x => x.lg))) {
+      const sb = await get('site/v2/sports/soccer/' + lg + '/scoreboard').catch(() => null); if (!sb) continue;
+      for (const e of sb.events || []) {
+        if (!playing.some(x => x.e.id === e.id)) continue;
+        const [st, msgs] = ftNews(live.get(e.id)?.st, e, fav, { goals: goalsOn(), ends: endsOn() });
+        live.set(e.id, { st, keep: st.st === 'in' });
+        if (st.st === 'post') { const x = sched.find(y => y.e.id === e.id); if (x) x.e.competitions[0].status.type.state = 'post'; }  // fini : on ne le regarde plus
+        for (const m of msgs) { await ctx.notifications?.send({ type: 'goal', ...m, open: 'plugin:neodex.football' }).catch(() => {}); n++; }
+      }
+    }
+    return n;
+  }
+  const bg = ctx.background?.every ? (ctx.background.every(1, () => goalTick()), null) : setInterval(goalTick, 60000);
+  $('ftGoals').checked = goalsOn(); $('ftEnds').checked = endsOn();
+  $('ftGoals').onchange = async () => { await save({goals: $('ftGoals').checked}); toast(prefs.goals ? 'Tu seras prévenu à chaque but des matchs de tes équipes' : 'Plus de notification de but'); };
+  $('ftEnds').onchange = async () => { await save({ends: $('ftEnds').checked}); };
+  $('ftTry').onclick = () => { const t = curTeam()?.name || 'Ton équipe'; ctx.notifications?.send({ type: 'goal', title: '⚽ BUT ! ' + t + ' (essai)', body: t + ' 1 - 0 Adversaire · 23\' · un joueur', open: 'plugin:neodex.football' }).then(() => toast('Notification envoyée.'), e => toast('Notification impossible : ' + e.message, true)); };
+  view.__ft.goals = { tick: goalTick, sched: v => v ? (sched = v) : sched, live };
   ctx.onOpen(() => render());
-  ctx.onClose(() => { clearTimeout(timer); clearInterval(calTimer); });
+  ctx.onClose(() => { clearTimeout(timer); clearInterval(calTimer); if (bg) clearInterval(bg); });
 }
